@@ -42,10 +42,22 @@ def createMutFile(inputfasta, outputfilename, parameter):
     temp_file = "temp/human_full-length-seq.fasta"
 
     Bio.SeqIO.write(seq_df['seqrecord'].tolist(), temp_file, 'fasta')
+    ref_seq = parameter['ref_seq']
+    rbd_df = alignment(50000, seq_df, parameter["refprotname"], ref_seq, parameter['mafft'])
 
-    alignment(50000, seq_df, parameter["refprotname"], parameter["ref_seq"])
+    rbd_df = rbd_df.query('n_ambiguous == 0').query('n_gaps == 0')
+    assert rbd_df['all_valid_nts'].all()
+    print(f'Retained {len(rbd_df)} sequences')
 
-def alignment(chunksize, spikes_df, refprotfile, refseq):
+    refseq_str = str(ref_seq.seq)
+    ref_df = max_muts(rbd_df, refseq_str, parameter['max_muts'])
+
+    site_offset = parameter['site_offset']
+
+    write_output(ref_df, outputfilename, site_offset, refseq_str)
+
+
+def alignment(chunksize, spikes_df, refprotfile, refseq, mafft):
     aligned_rbds = []
 
     for i in range(0, len(spikes_df), chunksize):
@@ -57,7 +69,7 @@ def alignment(chunksize, spikes_df, refprotfile, refseq):
         # cmds = ['mafft', '--auto', '--thread', str(config['max_cpus']),
         #        '--keeplength', '--addfragments', spikes_file, refprotfile]
 
-        cmds = [parameter["mafft"], '--auto', '--thread', '-1',
+        cmds = [mafft, '--auto', '--thread', '-1',
                 '--keeplength', '--addfragments', spikes_file, refprotfile]
 
         res = subprocess.run(cmds, capture_output=True)
@@ -82,12 +94,58 @@ def alignment(chunksize, spikes_df, refprotfile, refseq):
 
     assert len(aligned_rbds) == len(spikes_df)
 
-    return aligned_rbds
+    rbd_df = (
+        pd.DataFrame({'seqrecord': aligned_rbds})
+        .assign(description=lambda x: x['seqrecord'].map(lambda rec: rec.description),
+                country=lambda x: x['description'].str.split('|').str[-1],
+                host=lambda x: x['description'].str.split('|').str[6].str.strip(),
+                length=lambda x: x['seqrecord'].map(len),
+                n_ambiguous=lambda x: x['seqrecord'].map(lambda rec: rec.seq.count('X') + rec.seq.count('x')),
+                n_gaps=lambda x: x['seqrecord'].map(lambda rec: rec.seq.count('-')),
+                all_valid_nts=lambda x: x['seqrecord'].map(lambda rec: re.fullmatch(f"[{protein_letters}]+",
+                                                                                    str(rec.seq)) is not None),
+                )
+    )
+
+    assert all(rbd_df['length'] == len(refseq))
+
+    return rbd_df
+
+def max_muts(rbd_df, refseq_str, max_muts):
+    rbd_df = (
+        rbd_df.assign(seq = lambda x: x['seqrecord'].map(lambda rec: str(rec.seq)),
+                      n_mutations = lambda x: x['seq'].map(lambda s: sum(x != y for x, y in zip(s, refseq_str))))
+    )
+
+    rbd_df = rbd_df.query('n_mutations <= @max_muts')
+
+    return rbd_df
+
+def write_output(rbd_df, outputfile, site_offset, refseq_str):
+
+    records = []
+    for tup in rbd_df[['seq', 'country']].itertuples():
+        for isite, (mut, wt) in enumerate(zip(tup.seq, refseq_str), start=1):
+            if mut != wt:
+                records.append((isite, isite + site_offset, wt, mut, tup.country))
+
+    muts_df = (pd.DataFrame.from_records(records,
+                                         columns=['isite', 'site', 'wildtype', 'mutant', 'country'])
+               .groupby(['isite', 'site', 'wildtype', 'mutant'])
+               .aggregate(count=pd.NamedAgg('country', 'count'),
+                          n_countries=pd.NamedAgg('country', 'nunique'))
+               .reset_index()
+               .sort_values('count', ascending=False)
+               .assign(frequency=lambda x: x['count'] / len(rbd_df))
+               )
+
+    print(f'Writing mutation counts to {outputfile}')
+    muts_df.to_csv(outputfile, index = False)
 
 
 if __name__ == '__main__':
     inputfasta = "data/spikenuc0523_1.fasta"
-    outputfilename = 'result/test_1.csv'
+    outputfilename = 'result/test_2.csv'
     wildtype = "data/wildtype_sequence.fasta"
     ref_seq = Bio.SeqIO.read(wildtype, 'fasta')
     parameter = {'min_length': 3800,
@@ -95,7 +153,9 @@ if __name__ == '__main__':
                  'max_ambig': 100,
                  'ref_seq': ref_seq,
                  'refprotname': wildtype,
-                 'mafft': "C:\Program Files\mafft-win\mafft.bat"
+                 'mafft': "C:\Program Files\mafft-win\mafft.bat",
+                 'max_muts': 150,
+                 'site_offset': 330
                  }
 
     createMutFile(inputfasta, outputfilename, parameter)
