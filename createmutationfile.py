@@ -4,7 +4,7 @@ import re
 import subprocess
 
 import Bio.SeqIO
-from Bio.Data.IUPACData import protein_letters
+from Bio.Data.IUPACData import ambiguous_dna_letters
 import pandas as pd
 
 
@@ -103,7 +103,7 @@ def alignment(chunksize, genes_df, refprotfile, refseq, mafft):
                 length=lambda x: x['seqrecord'].map(len),
                 n_ambiguous=lambda x: x['seqrecord'].map(lambda rec: rec.seq.count('X') + rec.seq.count('x')),
                 n_gaps=lambda x: x['seqrecord'].map(lambda rec: rec.seq.count('-')),
-                all_valid_nts=lambda x: x['seqrecord'].map(lambda rec: re.fullmatch(f"[{protein_letters}]+",
+                all_valid_nts=lambda x: x['seqrecord'].map(lambda rec: re.fullmatch(f"[{ambiguous_dna_letters}]+",
                                                                                     str(rec.seq)) is not None),
                 )
     )
@@ -147,7 +147,7 @@ def write_output(gen_df, outputfile, site_offset, refseq_str):
 
 if __name__ == '__main__':
     inputfasta = "data/20210613_gisaid_genomes.fasta"
-    outputfilename = 'result/test_4.csv'
+    outputfilename = 'result/test_6.csv'
     wildtype = "data/GISAID_nsp5.fasta"
     ref_seq = Bio.SeqIO.read(wildtype, 'fasta')
     parameter = {'min_length': 29500,
