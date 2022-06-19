@@ -4,7 +4,7 @@ import re
 import subprocess
 
 import Bio.SeqIO
-from Bio.Data.IUPACData import unambiguous_dna_letters
+from Bio.Data.IUPACData import ambiguous_dna_letters, unambiguous_dna_letters
 import pandas as pd
 
 
@@ -107,6 +107,11 @@ def alignment(chunksize, genes_df, refprotfile, refseq, mafft):
                                                                                     str(rec.seq)) is not None),
                 )
     )
+    if parameter['exclude_ambig'] == True:
+        before_exclude = len(gen_df)
+        gen_df = gen_df[gen_df['all_valid_nts'] == True]
+        after_exclude = len(gen_df)
+        print(f'Retained {after_exclude} rows out of {before_exclude}.')
 
     assert all(gen_df['length'] == len(refseq))
 
@@ -147,7 +152,7 @@ def write_output(gen_df, outputfile, site_offset, refseq_str):
 
 if __name__ == '__main__':
     inputfasta = "data/20210613_gisaid_genomes.fasta"
-    outputfilename = 'result/test_6.csv'
+    outputfilename = 'result/test_7_unamb.csv'
     wildtype = "data/GISAID_nsp5.fasta"
     ref_seq = Bio.SeqIO.read(wildtype, 'fasta')
     parameter = {'min_length': 29500,
@@ -157,7 +162,8 @@ if __name__ == '__main__':
                  'refprotname': wildtype,
                  'mafft': "C:/Program Files/mafft-win/mafft.bat",
                  'max_muts': 100000,
-                 'site_offset': 10055     #   nsp5: 10055; nsp12: 13422
+                 'site_offset': 10055,     #   nsp5: 10055; nsp12: 13422
+                 'exclude_ambig': True
                  }
 
     createMutFile(inputfasta, outputfilename, parameter)
