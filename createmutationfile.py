@@ -4,7 +4,7 @@ import re
 import subprocess
 
 import Bio.SeqIO
-from Bio.Data.IUPACData import ambiguous_dna_letters
+from Bio.Data.IUPACData import unambiguous_dna_letters
 import pandas as pd
 
 
@@ -103,7 +103,7 @@ def alignment(chunksize, genes_df, refprotfile, refseq, mafft):
                 length=lambda x: x['seqrecord'].map(len),
                 n_ambiguous=lambda x: x['seqrecord'].map(lambda rec: rec.seq.count('X') + rec.seq.count('x')),
                 n_gaps=lambda x: x['seqrecord'].map(lambda rec: rec.seq.count('-')),
-                all_valid_nts=lambda x: x['seqrecord'].map(lambda rec: re.fullmatch(f"[{ambiguous_dna_letters}]+",
+                all_valid_nts=lambda x: x['seqrecord'].map(lambda rec: re.fullmatch(f"[{unambiguous_dna_letters}]+",
                                                                                     str(rec.seq)) is not None),
                 )
     )
