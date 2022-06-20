@@ -4,7 +4,8 @@ import re
 import subprocess
 
 import Bio.SeqIO
-from Bio.Data.IUPACData import unambiguous_dna_letters
+from Bio.Seq import Seq
+from Bio.Data.IUPACData import protein_letters, unambiguous_dna_letters
 import pandas as pd
 
 
@@ -50,7 +51,8 @@ def createMutFile(inputfasta, outputfilename, parameter):
     assert gen_df['all_valid_nts'].all()
     print(f'Retained {len(gen_df)} sequences')
 
-    refseq_str = str(ref_seq.seq)
+    ref_seq_tr = ref_seq.translate()
+    refseq_str = str(ref_seq_tr.seq)
     ref_df = max_muts(gen_df, refseq_str, parameter['max_muts'])
 
     site_offset = parameter['site_offset']
@@ -113,6 +115,8 @@ def alignment(chunksize, genes_df, refprotfile, refseq, mafft):
         after_exclude = len(gen_df)
         print(f'Retained {after_exclude} rows out of {before_exclude}.')
 
+    gen_df['protseq'] = [''.join(Seq(sq).translate()) for sq in gen_df['seqrecord']]
+
     assert all(gen_df['length'] == len(refseq))
 
     return gen_df
@@ -120,7 +124,7 @@ def alignment(chunksize, genes_df, refprotfile, refseq, mafft):
 
 def max_muts(gen_df, refseq_str, max_muts):
     gen_df = (
-        gen_df.assign(seq=lambda x: x['seqrecord'].map(lambda rec: str(rec.seq)),
+        gen_df.assign(seq=lambda x: x['protseq'].map(lambda rec: str(rec.seq)),
                       n_mutations=lambda x: x['seq'].map(lambda s: sum(x != y for x, y in zip(s, refseq_str))))
     )
 
