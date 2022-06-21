@@ -137,8 +137,8 @@ def write_output(gen_df, outputfile, site_offset, refseq_str):
                 records.append((isite, isite + site_offset, wt, mut, tup.country))
 
     muts_df = (pd.DataFrame.from_records(records,
-                                         columns=['isite', 'site', 'wildtype', 'mutant', 'country'])
-               .groupby(['isite', 'site', 'wildtype', 'mutant'])
+                                         columns=['gene site', 'genome site', 'wt nt', 'mutant nt', 'country'])
+               .groupby(['gene site', 'genome site', 'wt nt', 'mutant nt'])
                .aggregate(count=pd.NamedAgg('country', 'count'),
                           n_countries=pd.NamedAgg('country', 'nunique'))
                .reset_index()
@@ -152,8 +152,8 @@ def write_output(gen_df, outputfile, site_offset, refseq_str):
 
 if __name__ == '__main__':
     inputfasta = "data/20210613_gisaid_genomes.fasta"
-    outputfilename = 'result/test_7_unamb.csv'
-    wildtype = "data/GISAID_nsp5.fasta"
+    outputfilename = 'result/test_8_nsp12.csv'
+    wildtype = "data/GISAID_nsp12_ref.fasta"
     ref_seq = Bio.SeqIO.read(wildtype, 'fasta')
     parameter = {'min_length': 29500,
                  'max_length': 30000,
@@ -162,7 +162,7 @@ if __name__ == '__main__':
                  'refprotname': wildtype,
                  'mafft': "C:/Program Files/mafft-win/mafft.bat",
                  'max_muts': 100000,
-                 'site_offset': 10055,     #   nsp5: 10055; nsp12: 13422
+                 'site_offset': 13422,     #   nsp5: 10055; nsp12: 13422
                  'exclude_ambig': True
                  }
 
