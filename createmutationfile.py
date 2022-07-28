@@ -45,7 +45,7 @@ def createMutFile(inputfasta, outputfilename, parameter):
 
     Bio.SeqIO.write(seq_df['seqrecord'].tolist(), temp_file, 'fasta')
     ref_seq = parameter['ref_seq']
-    gen_df = alignment(50000, seq_df, parameter["refprotname"], ref_seq, parameter['mafft'])
+    gen_df = alignment(parameter['align_size'], seq_df, parameter["refprotname"], ref_seq, parameter['mafft'])
 
     gen_df = gen_df.query('n_ambiguous == 0').query('n_gaps == 0')
     assert gen_df['all_valid_nts'].all()
@@ -139,17 +139,18 @@ def max_muts(gen_df, refseq_str, max_muts):
 def write_output(gen_df, outputfile, site_offset, refseq_str, refseq_aa_str):
     records = []
     for tup in gen_df[['seq', 'country']].itertuples():
-        for isite, (mut_nt, wt_nt) in enumerate(zip(tup.seq, refseq_str), start=1):
+        for   isite, (mut_nt, wt_nt) in enumerate( zip(tup.seq, refseq_str), start=1):
             if mut_nt != wt_nt:
-                records.append((isite, isite + site_offset, wt_nt, mut_nt))
+                records.append((tup.Index , isite, isite + site_offset, wt_nt, mut_nt))
 
+    aa_rec = []
     for tup in gen_df[['all_valid_prot', 'country']].itertuples():
-        for aasite, (mut_aa, wt_aa) in enumerate(zip(tup.all_valid_prot, refseq_aa_str), start=1):
+        for   aasite, (mut_aa, wt_aa) in enumerate( zip(tup.all_valid_prot, refseq_aa_str), start=1):
             if mut_aa != wt_aa:
-                records.append((aasite, wt_aa, mut_aa, tup.country))
+                aa_rec.append((tup.Index , aasite, wt_aa, mut_aa, tup.country))
 
     muts_df = (pd.DataFrame.from_records(records,
-                                         columns=['gene site', 'genome site', 'wt nt', 'mutant nt','aa site', 'wt aa', 'mutant aa', 'country', 'count'])
+                                         columns=['gene site', 'genome site', 'wt nt', 'mutant nt','aa site', 'wt aa', 'mutant aa'])
                .groupby(['gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa', 'mutant aa'])
                .aggregate(count=pd.NamedAgg('country', 'count'),
                           n_countries=pd.NamedAgg('country', 'nunique'))
@@ -175,7 +176,8 @@ if __name__ == '__main__':
                  'mafft': "C:/Program Files/mafft-win/mafft.bat",
                  'max_muts': 100000,
                  'site_offset': 10055,     #   nsp5: 10055; nsp12: 13442
-                 'exclude_ambig': True
+                 'exclude_ambig': True,
+                 'align_size': 5000
                  }
 
     createMutFile(inputfasta, outputfilename, parameter)
