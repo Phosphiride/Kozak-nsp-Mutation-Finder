@@ -4,7 +4,8 @@ import re
 import subprocess
 
 import Bio.SeqIO
-from Bio.Data.IUPACData import unambiguous_dna_letters
+import Bio.Seq
+from Bio.Data.IUPACData import unambiguous_dna_letters, protein_letters
 import pandas as pd
 
 
@@ -51,27 +52,28 @@ def createMutFile(inputfasta, outputfilename, parameter):
     print(f'Retained {len(gen_df)} sequences')
 
     refseq_str = str(ref_seq.seq)
+    refseq_aa_str = str(ref_seq.translate)
     ref_df = max_muts(gen_df, refseq_str, parameter['max_muts'])
 
     site_offset = parameter['site_offset']
 
-    write_output(ref_df, outputfilename, site_offset, refseq_str)
+    write_output(ref_df, outputfilename, site_offset, refseq_str, refseq_aa_str)
 
 
 def alignment(chunksize, genes_df, refprotfile, refseq, mafft):
     aligned_genes = []
 
     for i in range(0, len(genes_df), chunksize):
-        spikes_file = os.path.join("temp/",
+        gene_file = os.path.join("temp/",
                                    f"human_full-length_spikes_{i + 1}-to-{i + chunksize}.fasta")
-        print(f"Writing spikes {i + 1} to {i + chunksize} to {spikes_file}")
-        _ = Bio.SeqIO.write(genes_df['seqrecord'].tolist()[i: i + chunksize], spikes_file, 'fasta')
+        print(f"Writing genes {i + 1} to {i + chunksize} to {gene_file}")
+        _ = Bio.SeqIO.write(genes_df['seqrecord'].tolist()[i: i + chunksize], gene_file, 'fasta')
         print('Now aligning these sequences...')
         # cmds = ['mafft', '--auto', '--thread', str(config['max_cpus']),
-        #        '--keeplength', '--addfragments', spikes_file, refprotfile]
+        #        '--keeplength', '--addfragments', gene_file, refprotfile]
 
         cmds = [mafft, '--auto', '--thread', '-1',
-                '--keeplength', '--addfragments', spikes_file, refprotfile]
+                '--keeplength', '--addfragments', gene_file, refprotfile]
 
         res = subprocess.run(cmds, capture_output=True)
         if res.returncode:
@@ -107,6 +109,7 @@ def alignment(chunksize, genes_df, refprotfile, refseq, mafft):
                                                                                     str(rec.seq)) is not None),
                 )
     )
+
     if parameter['exclude_ambig'] == True:
         before_exclude = len(gen_df)
         gen_df = gen_df[gen_df['all_valid_nts'] == True]
@@ -114,6 +117,10 @@ def alignment(chunksize, genes_df, refprotfile, refseq, mafft):
         print(f'Retained {after_exclude} rows out of {before_exclude}.')
 
     assert all(gen_df['length'] == len(refseq))
+
+    gen_df = (
+        gen_df.assign(all_valid_prot = lambda x: x['seqrecord'].map(lambda rec: rec.seq.translate()))
+    )
 
     return gen_df
 
@@ -129,16 +136,21 @@ def max_muts(gen_df, refseq_str, max_muts):
     return gen_df
 
 
-def write_output(gen_df, outputfile, site_offset, refseq_str):
+def write_output(gen_df, outputfile, site_offset, refseq_str, refseq_aa_str):
     records = []
     for tup in gen_df[['seq', 'country']].itertuples():
-        for isite, (mut, wt) in enumerate(zip(tup.seq, refseq_str), start=1):
-            if mut != wt:
-                records.append((isite, isite + site_offset, wt, mut, tup.country))
+        for isite, (mut_nt, wt_nt) in enumerate(zip(tup.seq, refseq_str), start=1):
+            if mut_nt != wt_nt:
+                records.append((isite, isite + site_offset, wt_nt, mut_nt))
+
+    for tup in gen_df[['all_valid_prot', 'country']].itertuples():
+        for aasite, (mut_aa, wt_aa) in enumerate(zip(tup.all_valid_prot, refseq_aa_str), start=1):
+            if mut_aa != wt_aa:
+                records.append((aasite, wt_aa, mut_aa, tup.country))
 
     muts_df = (pd.DataFrame.from_records(records,
-                                         columns=['gene site', 'genome site', 'wt nt', 'mutant nt', 'country'])
-               .groupby(['gene site', 'genome site', 'wt nt', 'mutant nt'])
+                                         columns=['gene site', 'genome site', 'wt nt', 'mutant nt','aa site', 'wt aa', 'mutant aa', 'country', 'count'])
+               .groupby(['gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa', 'mutant aa'])
                .aggregate(count=pd.NamedAgg('country', 'count'),
                           n_countries=pd.NamedAgg('country', 'nunique'))
                .reset_index()
@@ -152,8 +164,8 @@ def write_output(gen_df, outputfile, site_offset, refseq_str):
 
 if __name__ == '__main__':
     inputfasta = "data/20210613_gisaid_genomes.fasta"
-    outputfilename = 'result/test_8_nsp12.csv'
-    wildtype = "data/GISAID_nsp12_ref.fasta"
+    outputfilename = 'result/test_13_aa.csv'
+    wildtype = "data/GISAID_nsp5.fasta"
     ref_seq = Bio.SeqIO.read(wildtype, 'fasta')
     parameter = {'min_length': 29500,
                  'max_length': 30000,
@@ -162,7 +174,7 @@ if __name__ == '__main__':
                  'refprotname': wildtype,
                  'mafft': "C:/Program Files/mafft-win/mafft.bat",
                  'max_muts': 100000,
-                 'site_offset': 13422,     #   nsp5: 10055; nsp12: 13422
+                 'site_offset': 10055,     #   nsp5: 10055; nsp12: 13442
                  'exclude_ambig': True
                  }
 
