@@ -162,21 +162,28 @@ def write_output(gen_df, outputfile, site_offset, refseq_str, refseq_aa_str):
                                          columns=['gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa',
                                                   'mutant aa', 'country'])
                )
-    muts_df.to_csv('result/unagg_test.csv', index=False)
+    muts_df.to_csv('result/unagg_test_3.csv', index=False)
 
     print(f'Writing mutation counts to {outputfile}')
 
-    muts_df = muts_df.groupby(['gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa', 'mutant aa']) \
+    muts_df_agg = muts_df.groupby(['gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa', 'mutant aa']) \
         .aggregate(count=pd.NamedAgg('country', 'count'), n_countries=pd.NamedAgg('country', 'nunique')).reset_index() \
         .sort_values('count', ascending=False).assign(frequency=lambda x: x['count'] / len(gen_df))
 
-    muts_df.to_csv(outputfile, index=False)
+    muts_df_country = muts_df.groupby(['gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa', 'mutant aa', 'country']) \
+        .aggregate(count=pd.NamedAgg('country', 'count'), n_countries=pd.NamedAgg('country', 'nunique')).reset_index() \
+        .sort_values('count', ascending=False).assign(frequency=lambda x: x['count'] / len(gen_df))
+
+    muts_df_agg.to_csv(outputfile, index=False)
+
+    muts_df_country.to_csv('result/country_agg.csv', index=False)
 
 
 if __name__ == '__main__':
-    inputfasta = "data/20210613_gisaid_genomes.fasta"
+    #inputfasta = "data/20211104_gisaid_genomes.fasta"
     #inputfasta = "data/aaaaa.fasta"
-    outputfilename = 'result/test_13_aa.csv'
+    inputfasta = "data/USA_test.fasta"
+    outputfilename = 'result/test_14_aa.csv'
     wildtype = "data/GISAID_nsp5.fasta"
     ref_seq = Bio.SeqIO.read(wildtype, 'fasta')
     parameter = {'min_length': 29500,
