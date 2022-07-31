@@ -139,14 +139,16 @@ def max_muts(gen_df, refseq_str, max_muts):
 def write_output(gen_df, outputfile, site_offset, refseq_str, refseq_aa_str):
     records = []
 
+    row = 0
     for tup in gen_df[['all_valid_prot' ,  'seq', 'country']].itertuples():
+        row = row + 1
         avp_str = str(tup.all_valid_prot)
         for isite, (mut_nt, wt_nt) in enumerate(zip(tup.seq, refseq_str), start=1):
 
             aa_site = math.ceil(isite/3)
             if mut_nt != wt_nt:
                 # records.append((tup.Index , isite, isite + site_offset, wt_nt, mut_nt))
-                records.append((isite, isite + site_offset, wt_nt, mut_nt, aa_site, refseq_aa_str[aa_site-1], avp_str[aa_site-1], tup.country))
+                records.append((row, isite, isite + site_offset, wt_nt, mut_nt, aa_site, refseq_aa_str[aa_site-1], avp_str[aa_site-1], tup.country))
 
     '''muts_df = (pd.DataFrame.from_records(records,
                                          columns=['gene site', 'genome site', 'wt nt', 'mutant nt','aa site', 'wt aa', 'mutant aa'])
@@ -159,7 +161,7 @@ def write_output(gen_df, outputfile, site_offset, refseq_str, refseq_aa_str):
                )'''
 
     muts_df = (pd.DataFrame.from_records(records,
-                                         columns=['gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa',
+                                         columns=['row', 'gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa',
                                                   'mutant aa', 'country'])
                )
     muts_df.to_csv('result/unagg_test_3.csv', index=False)
