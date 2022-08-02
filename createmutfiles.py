@@ -17,13 +17,15 @@ if __name__ == '__main__':
     outputfilenames = ['result/multtest_1.csv', 'result/multtest_2.csv']
     wildtype = "data/wildtype_sequence.fasta"
     ref_seq = Bio.SeqIO.read(wildtype, 'fasta')
-    parameter = {'min_length': 3800,
-                 'max_length': 3900,
+    parameter = {'min_length': 29500,
+                 'max_length': 30000,
                  'max_ambig': 100,
                  'ref_seq': ref_seq,
                  'refprotname': wildtype,
-                 'mafft': "C:\Program Files\mafft-win\mafft.bat",
-                 'max_muts': 150,
-                 'site_offset': 330
+                 'mafft': "C:/Program Files/mafft-win/mafft.bat",
+                 'max_muts': 100000,
+                 'site_offset': 10055,  # nsp5: 10055; nsp12: 13442
+                 'exclude_ambig': True,
+                 'align_size': 1000
                  }
     createmutfiles(inputfastas, outputfilenames, parameter)

@@ -9,7 +9,7 @@ from Bio.Data.IUPACData import unambiguous_dna_letters, protein_letters
 import pandas as pd
 
 
-def createMutFile(inputfasta, outputfilename, parameter):
+def createMutFile(inputfasta, outputfilename, unaggoutput, countryagg, parameter):
     sequences = list(Bio.SeqIO.parse(inputfasta, 'fasta'))  # parse sequences into python
     print(f'Read {len(sequences)} sequences.')
 
@@ -57,7 +57,7 @@ def createMutFile(inputfasta, outputfilename, parameter):
 
     site_offset = parameter['site_offset']
 
-    write_output(ref_df, outputfilename, site_offset, refseq_str, refseq_aa_str)
+    write_output(ref_df, outputfilename, unaggoutput, countryagg, site_offset, refseq_str, refseq_aa_str)
 
 
 def alignment(chunksize, genes_df, refprotfile, refseq, mafft):
@@ -136,7 +136,7 @@ def max_muts(gen_df, refseq_str, max_muts):
     return gen_df
 
 
-def write_output(gen_df, outputfile, site_offset, refseq_str, refseq_aa_str):
+def write_output(gen_df, outputfile, unagg_out, country_agg, site_offset, refseq_str, refseq_aa_str):
     records = []
 
     row = 0
@@ -160,13 +160,13 @@ def write_output(gen_df, outputfile, site_offset, refseq_str, refseq_aa_str):
                .assign(frequency=lambda x: x['count'] / len(gen_df))
                )'''
 
+    print(f'Writing outputs to {unagg_out}, {outputfile}, and {country_agg}')
+
     muts_df = (pd.DataFrame.from_records(records,
                                          columns=['row', 'gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa',
                                                   'mutant aa', 'country'])
                )
-    muts_df.to_csv('result/unagg_test_3.csv', index=False)
-
-    print(f'Writing mutation counts to {outputfile}')
+    muts_df.to_csv(unagg_out, index=False)
 
     muts_df_agg = muts_df.groupby(['gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa', 'mutant aa']) \
         .aggregate(count=pd.NamedAgg('country', 'count'), n_countries=pd.NamedAgg('country', 'nunique')).reset_index() \
@@ -178,14 +178,16 @@ def write_output(gen_df, outputfile, site_offset, refseq_str, refseq_aa_str):
 
     muts_df_agg.to_csv(outputfile, index=False)
 
-    muts_df_country.to_csv('result/country_agg.csv', index=False)
+    muts_df_country.to_csv(country_agg, index=False)
 
 
 if __name__ == '__main__':
     #inputfasta = "data/20211104_gisaid_genomes.fasta"
-    #inputfasta = "data/aaaaa.fasta"
-    inputfasta = "data/USA_test.fasta"
+    inputfasta = "data/aaaaa.fasta"                    #test cases
+    #inputfasta = "data/USA_test.fasta"
+    unaggoutput = 'result/unagg_result.csv'
     outputfilename = 'result/test_14_aa.csv'
+    countryagg = 'result/country_agg.csv'
     wildtype = "data/GISAID_nsp5.fasta"
     ref_seq = Bio.SeqIO.read(wildtype, 'fasta')
     parameter = {'min_length': 29500,
@@ -200,4 +202,4 @@ if __name__ == '__main__':
                  'align_size': 1000
                  }
 
-    createMutFile(inputfasta, outputfilename, parameter)
+    createMutFile(inputfasta, outputfilename, unaggoutput, countryagg, parameter)
