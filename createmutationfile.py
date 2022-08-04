@@ -45,7 +45,7 @@ def createMutFile(inputfasta, outputfilename, unaggoutput, countryagg, parameter
 
     Bio.SeqIO.write(seq_df['seqrecord'].tolist(), temp_file, 'fasta')
     ref_seq = parameter['ref_seq']
-    gen_df = alignment(parameter['align_size'], seq_df, parameter["refprotname"], ref_seq, parameter['mafft'])
+    gen_df = alignment(seq_df, ref_seq, parameter)
 
     gen_df = gen_df.query('n_ambiguous == 0').query('n_gaps == 0')
     assert gen_df['all_valid_nts'].all()
@@ -60,20 +60,20 @@ def createMutFile(inputfasta, outputfilename, unaggoutput, countryagg, parameter
     write_output(ref_df, outputfilename, unaggoutput, countryagg, site_offset, refseq_str, refseq_aa_str)
 
 
-def alignment(chunksize, genes_df, refprotfile, refseq, mafft):
+def alignment(genes_df, refseq, parameter):
     aligned_genes = []
 
-    for i in range(0, len(genes_df), chunksize):
+    for i in range(0, len(genes_df), parameter['align_size']):
         gene_file = os.path.join("temp/",
-                                   f"human_full-length_spikes_{i + 1}-to-{i + chunksize}.fasta")
-        print(f"Writing genes {i + 1} to {i + chunksize} to {gene_file}")
-        _ = Bio.SeqIO.write(genes_df['seqrecord'].tolist()[i: i + chunksize], gene_file, 'fasta')
+                                   f"human_full-length_spikes_{i + 1}-to-{i + parameter['align_size']}.fasta")
+        print(f"Writing genes {i + 1} to {i + parameter['align_size']} to {gene_file}")
+        _ = Bio.SeqIO.write(genes_df['seqrecord'].tolist()[i: i + parameter['align_size']], gene_file, 'fasta')
         print('Now aligning these sequences...')
         # cmds = ['mafft', '--auto', '--thread', str(config['max_cpus']),
         #        '--keeplength', '--addfragments', gene_file, refprotfile]
 
-        cmds = [mafft, '--auto', '--thread', '-1',
-                '--keeplength', '--addfragments', gene_file, refprotfile]
+        cmds = [parameter['mafft'], '--auto', '--thread', '-1',
+                '--keeplength', '--addfragments', gene_file, parameter["refprotname"]]
 
         res = subprocess.run(cmds, capture_output=True)
         if res.returncode:
@@ -92,7 +92,7 @@ def alignment(chunksize, genes_df, refprotfile, refseq, mafft):
                 print(iseqs[0].description)
                 assert iseqs[0].seq == refseq.seq and iseqs[0].description == refseq.description
                 iseqs = iseqs[1:]
-                assert len(iseqs) == min(chunksize, len(genes_df) - i)
+                assert len(iseqs) == min(parameter['align_size'], len(genes_df) - i)
                 aligned_genes += iseqs
 
     assert len(aligned_genes) == len(genes_df)

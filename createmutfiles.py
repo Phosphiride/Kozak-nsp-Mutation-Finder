@@ -11,11 +11,11 @@ def createmutfiles(inputfastas, outputfilenames, unaggoutputs, countryaggs, para
         createMutFile(inputfasta, outputfilename, unaggoutputs, countryaggs, parameter)
 
 if __name__ == '__main__':
-    inputfastas = ["data/multsingle_1.fasta", "data/multsingle_2.fasta"]
+    inputfastas = ["data/20211104_gisaid_genomes.fasta", "data/20210613_gisaid_genomes.fasta"]
     outputfilenames = ['result/multtest_1.csv', 'result/multtest_2.csv']
     unaggoutputs = ['result/unagg_1.csv', 'result/unagg_2.csv']
     countryaggs = ['result/country_1.csv', 'result/country_2.csv']
-    wildtype = "data/wildtype_sequence.fasta"
+    wildtype = "data/GISAID_nsp5.fasta"
     ref_seq = Bio.SeqIO.read(wildtype, 'fasta')
     parameter = {'min_length': 29500,
                  'max_length': 30000,
