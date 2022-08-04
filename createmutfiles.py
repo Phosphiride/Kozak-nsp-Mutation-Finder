@@ -4,17 +4,17 @@ import re
 import subprocess
 
 import Bio.SeqIO
-from Bio.Data.IUPACData import protein_letters
-import pandas as pd
 from createmutationfile import createMutFile
 
-def createmutfiles(inputfastas, outputfilenames, parameter):
-    for inputfasta, outputfilename in zip(inputfastas, outputfilenames):
-        createMutFile(inputfasta, outputfilename, parameter)
+def createmutfiles(inputfastas, outputfilenames, unaggoutputs, countryaggs, parameter):
+    for inputfasta, outputfilename, unaggoutputs, countryaggs in zip(inputfastas, outputfilenames, unaggoutputs, countryaggs):
+        createMutFile(inputfasta, outputfilename, unaggoutputs, countryaggs, parameter)
 
 if __name__ == '__main__':
-    inputfastas = ["data/spikenuc0523_1.fasta", "data/spikenuc0523_2.fasta"]
+    inputfastas = ["data/multsingle_1.fasta", "data/multsingle_2.fasta"]
     outputfilenames = ['result/multtest_1.csv', 'result/multtest_2.csv']
+    unaggoutputs = ['result/unagg_1.csv', 'result/unagg_2.csv']
+    countryaggs = ['result/country_1.csv', 'result/country_2.csv']
     wildtype = "data/wildtype_sequence.fasta"
     ref_seq = Bio.SeqIO.read(wildtype, 'fasta')
     parameter = {'min_length': 29500,
@@ -28,4 +28,4 @@ if __name__ == '__main__':
                  'exclude_ambig': True,
                  'align_size': 1000
                  }
-    createmutfiles(inputfastas, outputfilenames, parameter)
+    createmutfiles(inputfastas, outputfilenames, unaggoutputs, countryaggs, parameter)
