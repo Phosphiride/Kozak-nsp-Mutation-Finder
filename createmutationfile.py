@@ -182,7 +182,7 @@ def write_output(gen_df, outputfile, unagg_out, country_agg, site_offset, refseq
 
 
 if __name__ == '__main__':
-    #inputfasta = "data/20211104_gisaid_genomes.fasta"
+    #inputfasta = "data/multfolder/20211104_gisaid_genomes.fasta"
     inputfasta = "data/aaaaa.fasta"                    #test cases
     #inputfasta = "data/USA_test.fasta"
     unaggoutput = 'result/unagg_result.csv'
