@@ -11,39 +11,29 @@ def createmutfiles(inputfastas, outputfilenames, unaggoutputs, countryaggs, para
     for inputfasta, outputfilename, unaggoutput, countryagg in zip(inputfastas, outputfilenames, unaggoutputs, countryaggs):
         createMutFile(inputfasta, outputfilename, unaggoutput, countryagg, parameter)
 
+def createfolder():
+    pass
+
 def outputname(inputfastas):
-    name_list = []
+    output_list = []
+    country_list = []
+    unagg_list = []
     count = 1
     for file in inputfastas:
-        name_list.append(f'result/multtest_{count}.csv')
+        output_list.append(f'result/multtest_{count}.csv')
+        unagg_list.append(f'result/unagg_{count}.csv')
+        country_list.append(f'result/country_{count}.csv')
         count += 1
-    return name_list
-
-def unagg(inputfastas):
-    name_list = []
-    count = 1
-    for file in inputfastas:
-        name_list.append(f'result/unagg_{count}.csv')
-        count += 1
-    return name_list
-
-def country(inputfastas):
-    name_list = []
-    count = 1
-    for file in inputfastas:
-        name_list.append(f'result/country_{count}.csv')
-        count += 1
-    return name_list
+    return output_list, country_list, unagg_list
 
 if __name__ == '__main__':
     #inputfastas = ["data/20211104_gisaid_genomes.fasta", "data/20210613_gisaid_genomes.fasta"]
     inputfastas = glob("./data/multfolder/*.fasta")
+
     #outputfilenames = ['result/multtest_1.csv', 'result/multtest_2.csv']
-    outputfilenames = outputname(inputfastas)
+    outputfilenames, countryaggs, unaggoutputs = outputname(inputfastas)
     #unaggoutputs = ['result/unagg_1.csv', 'result/unagg_2.csv']
-    unaggoutputs = unagg(inputfastas)
     #countryaggs = ['result/country_1.csv', 'result/country_2.csv']
-    countryaggs = country(inputfastas)
     wildtype = "data/GISAID_nsp5.fasta"
     ref_seq = Bio.SeqIO.read(wildtype, 'fasta')
     parameter = {'min_length': 29500,
