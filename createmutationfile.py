@@ -125,7 +125,7 @@ def alignment(genes_df, refseq, parameter):
     return gen_df
 
 
-def max_muts(gen_df, refseq_str, max_muts):
+def max_muts(gen_df, refseq_str, max_uts):
     gen_df = (
         gen_df.assign(seq=lambda x: x['seqrecord'].map(lambda rec: str(rec.seq)),
                       n_mutations=lambda x: x['seq'].map(lambda s: sum(x != y for x, y in zip(s, refseq_str))))
