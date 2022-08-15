@@ -23,7 +23,8 @@ def extractMutation( input_file_name , output_file_name , start_line_no , number
                 input_file_fp.close()
                 return
             else:
-                continue
+                line = input_file_fp.readline()
+
 
 if __name__ == "__main__":
 
