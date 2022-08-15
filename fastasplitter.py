@@ -1,5 +1,4 @@
 import os
-import pandas
 
 def fastasplit(inputfasta, outputpath, outputfastas, file_name, parameter):
     splitfile = None
@@ -14,7 +13,7 @@ def fastasplit(inputfasta, outputpath, outputfastas, file_name, parameter):
 
     with open(inputfasta) as input:
         for lineno, line in enumerate(input):
-            if line.startswith('>hCoV-19/'):
+            if line.startswith('>NSP5|hCoV-19'):
                 print(line)
 
                 if count % parameter['linesperfile'] == 0:
@@ -25,26 +24,22 @@ def fastasplit(inputfasta, outputpath, outputfastas, file_name, parameter):
                     print(f'creating {split_filename}')
 
                 count += 1
-            splitfile.write(line)
+                splitfile.write(line)
 
     if not splitfile.closed:
         splitfile.close()
 
     print(f'Finished creating {int(count / linesperfile)} files.')
 
-def metasplit(inputmeta):
-    meta_db = p
-
-def getmetaname(inputname):
+def getfilename(inputname):
     name_split = inputname.split('.')
-    meta_name = f"{name_split[0]}.metadata.tsv"
     file_name = name_split[0].split('/')
-    return meta_name, file_name[2]
+    return file_name[1]
 
 
 if __name__ == '__main__':
-    inputfasta = "data/test2/1660403438836.sequences.fasta"
-    inputmeta, file_name = getmetaname(inputfasta)
+    inputfasta = "data/spike_nsp5.fasta"
+    file_name = getfilename(inputfasta)
     outputpath = f"data/{file_name}"
     outputfastas = "data/{}/{}_{}.fasta"
     parameter = {'linesperfile': 3}
