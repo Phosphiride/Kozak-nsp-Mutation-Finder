@@ -32,7 +32,7 @@ def fastasplit(inputfasta, outputpath, outputfastas, file_name, parameter):
                 if count % parameter['linesperfile'] == 0:
                     if splitfile:
                         splitfile.close()
-                    split_filename = outputfastas.format(file_name, file_name, int(count / linesperfile + 1))
+                    split_filename = outputfastas.format(file_name, int(count / linesperfile + 1))
                     splitfile = open(split_filename, 'w')
                     print(f'creating {split_filename}')
 
@@ -78,10 +78,11 @@ def getfilename(inputname):
 
 
 if __name__ == '__main__':
-    inputfasta = "data/spike_nsp5.fasta"
+    #inputfasta = "data/spike_nsp5.fasta"
+    inputfasta = "/work/data/kozak_data/allnuc0521/allnuc0521.fasta"
     file_name = getfilename(inputfasta)
-    outputpath = f"data/{file_name}"
-    outputfastas = "data/{}/{}_{}.fasta"
-    parameter = {'linesperfile': 4}
+    outputpath = f"/work/data/kozak_data/allnuc0521_split"
+    outputfastas = "/work/data/kozak_data/allnuc0521_split/{}_{}.fasta"
+    parameter = {'linesperfile': 100000}
 
     fastasplit(inputfasta, outputpath, outputfastas, file_name, parameter)
