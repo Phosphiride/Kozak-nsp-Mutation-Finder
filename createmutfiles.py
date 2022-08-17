@@ -44,12 +44,13 @@ if __name__ == '__main__':
     #countryaggs = ['result/country_1.csv', 'result/country_2.csv']
     wildtype = "data/GISAID_nsp5.fasta"
     ref_seq = Bio.SeqIO.read(wildtype, 'fasta')
-    parameter = {'min_length': 29500,
-                 'max_length': 30000,
+    parameter = {'min_length': 900,
+                 'max_length': 100,
                  'max_ambig': 100,
                  'ref_seq': ref_seq,
                  'refprotname': wildtype,
                  'mafft': "C:/Program Files/mafft-win/mafft.bat",
+                 #'mafft': "C:/Program Files/mafft-win/mafft.bat",
                  'max_muts': 100000,
                  'site_offset': 10055,  # nsp5: 10055; nsp12: 13442
                  'exclude_ambig': True,
