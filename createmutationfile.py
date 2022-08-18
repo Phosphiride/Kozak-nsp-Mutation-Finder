@@ -77,7 +77,8 @@ def alignment(genes_df, refseq, parameter):
         cmds = [parameter['mafft'], '--auto', '--thread', '-1',
                 '--keeplength', '--addfragments', gene_file, parameter["refprotname"]]
 
-        res = subprocess.run(cmds, capture_output=True)
+        #res = subprocess.run(cmds, capture_output=True)                        #python 3.9
+        res = subprocess.run(cmds, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if res.returncode:
             raise RuntimeError(f"Error in alignment:\n{res.stderr}")
         else:
