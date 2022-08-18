@@ -6,8 +6,8 @@ from glob import glob
 from datetime import datetime
 
 import Bio.SeqIO
-#from createmutationfile import createMutFile
-from test import createMutFile
+from createmutationfile import createMutFile
+#from test import createMutFile
 
 def createmutfiles(inputfastas, outputfilenames, unaggoutputs, countryaggs, dateaggs, parameter):
     for inputfasta, outputfilename, unaggoutput, countryagg, dateagg in zip(inputfastas, outputfilenames, unaggoutputs, countryaggs, dateaggs):
