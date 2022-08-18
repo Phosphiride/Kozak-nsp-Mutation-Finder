@@ -10,7 +10,7 @@ from Bio.Data.IUPACData import unambiguous_dna_letters, protein_letters
 import pandas as pd
 
 
-def createMutFile(inputfasta, outputfilename, unaggoutput, countryagg, parameter):
+def createMutFile(inputfasta, outputfilename, unaggoutput, countryagg, dateagg, parameter):
     sequences = list(Bio.SeqIO.parse(inputfasta, 'fasta'))  # parse sequences into python
     print(f'Read {len(sequences)} sequences.')
 
@@ -52,7 +52,6 @@ def createMutFile(inputfasta, outputfilename, unaggoutput, countryagg, parameter
 
     gen_df = gen_df.query('n_ambiguous == 0').query('n_gaps == 0')
     assert gen_df['all_valid_nts'].all()
-    print(f'Retained {len(gen_df)} sequences')
 
     refseq_str = str(ref_seq.seq)
     refseq_aa_str = str(ref_seq.translate().seq)
@@ -60,7 +59,7 @@ def createMutFile(inputfasta, outputfilename, unaggoutput, countryagg, parameter
 
     site_offset = parameter['site_offset']
 
-    write_output(ref_df, outputfilename, unaggoutput, countryagg, site_offset, refseq_str, refseq_aa_str)
+    write_output(ref_df, outputfilename, unaggoutput, countryagg, dateagg, site_offset, refseq_str, refseq_aa_str)
 
 
 def alignment(genes_df, refseq, parameter):
@@ -140,11 +139,11 @@ def max_muts(gen_df, refseq_str, max_muts):
     return gen_df
 
 
-def write_output(gen_df, outputfile, unagg_out, country_agg, site_offset, refseq_str, refseq_aa_str):
+def write_output(gen_df, outputfile, unagg_out, country_agg, date_agg, site_offset, refseq_str, refseq_aa_str):
     records = []
 
     row = 0
-    for tup in gen_df[['all_valid_prot' , 'seq', 'country']].itertuples():
+    for tup in gen_df[['all_valid_prot' , 'seq', 'country', 'date']].itertuples():
         row = row + 1
         avp_str = str(tup.all_valid_prot)
         for isite, (mut_nt, wt_nt) in enumerate(zip(tup.seq, refseq_str), start=1):
@@ -152,7 +151,7 @@ def write_output(gen_df, outputfile, unagg_out, country_agg, site_offset, refseq
             aa_site = math.ceil(isite/3)
             if mut_nt != wt_nt:
                 # records.append((tup.Index , isite, isite + site_offset, wt_nt, mut_nt))
-                records.append((row, isite, isite + site_offset, wt_nt, mut_nt, aa_site, refseq_aa_str[aa_site-1], avp_str[aa_site-1], tup.country))
+                records.append((row, isite, isite + site_offset, wt_nt, mut_nt, aa_site, refseq_aa_str[aa_site-1], avp_str[aa_site-1], tup.country, tup.date))
 
     '''muts_df = (pd.DataFrame.from_records(records,
                                          columns=['gene site', 'genome site', 'wt nt', 'mutant nt','aa site', 'wt aa', 'mutant aa'])
@@ -164,11 +163,11 @@ def write_output(gen_df, outputfile, unagg_out, country_agg, site_offset, refseq
                .assign(frequency=lambda x: x['count'] / len(gen_df))
                )'''
 
-    print(f'Writing outputs to {unagg_out}, {outputfile}, {country_agg}')
+    print(f'Writing outputs to {unagg_out}, {outputfile}, {country_agg}, and {date_agg}')
 
     muts_df = (pd.DataFrame.from_records(records,
                                          columns=['row', 'gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa',
-                                                  'mutant aa', 'country'])
+                                                  'mutant aa', 'country', 'date'])
                )
     muts_df.to_csv(unagg_out, index=False)
 
@@ -180,27 +179,27 @@ def write_output(gen_df, outputfile, unagg_out, country_agg, site_offset, refseq
         .aggregate(count=pd.NamedAgg('country', 'count'), n_countries=pd.NamedAgg('country', 'nunique')).reset_index() \
         .sort_values('count', ascending=False).assign(frequency=lambda x: x['count'] / len(gen_df))
 
-    '''muts_df_date = muts_df.groupby(
+    muts_df_date = muts_df.groupby(
         ['gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa', 'mutant aa', 'date']) \
         .aggregate(count=pd.NamedAgg('date', 'count'), n_countries=pd.NamedAgg('date', 'nunique')).reset_index() \
-        .sort_values('count', ascending=False).assign(frequency=lambda x: x['count'] / len(gen_df))'''
+        .sort_values('count', ascending=False).assign(frequency=lambda x: x['count'] / len(gen_df))
 
     muts_df_agg.to_csv(outputfile, index=False)
 
     muts_df_country.to_csv(country_agg, index=False)
 
-    #muts_df_date.to_csv(date_agg, index = False)
+    muts_df_date.to_csv(date_agg, index = False)
 
 
 if __name__ == '__main__':
     #inputfasta = "data/multfolder/20211104_gisaid_genomes.fasta"
     #inputfasta = "data/aaaaa.fasta"                    #test cases
-    inputfasta = "data/work_1.fasta"
+    inputfasta = "data/work_2.fasta"
     #inputfasta = "data/USA_test.fasta"
-    unaggoutput = 'result/unagg_result_full_data_2.csv'
-    outputfilename = 'result/test_15_full_data_2.csv'
-    countryagg = 'result/country_agg_full_data_2.csv'
-    #dateagg = 'result/date_agg_data.csv'
+    unaggoutput = 'result/unagg_result_full_data_3.csv'
+    outputfilename = 'result/test_15_full_data_3.csv'
+    countryagg = 'result/country_agg_full_data_3.csv'
+    dateagg = 'result/date_agg_data.csv'
     wildtype = "data/GISAID_nsp5.fasta"
     ref_read = Bio.SeqIO.read(wildtype, 'fasta')
     ref_seq = SeqRecord(seq=ref_read.seq.back_transcribe(), id=ref_read.id, name = ref_read.name, description = ref_read.description)
@@ -217,4 +216,4 @@ if __name__ == '__main__':
                  'align_size': 1000
                  }
 
-    createMutFile(inputfasta, outputfilename, unaggoutput, countryagg, parameter)
+    createMutFile(inputfasta, outputfilename, unaggoutput, countryagg, dateagg, parameter)
