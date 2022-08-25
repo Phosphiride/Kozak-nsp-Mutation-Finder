@@ -33,7 +33,7 @@ def createoutput(inputfolder, outputpath, mergeframe, parameter):
 
 if __name__ == '__main__':
     #inputpath = 'result/20220819001526/country'
-    inputpath = '/work/data/kozak-data/result_1-30/output'
+    inputpath = '/work/data/kozak_data/result_1-30/output'
     inputfolder = glob(f'{inputpath}/*.csv')
     #inputfolder = glob('result/20220819001526/country/*.csv')
     #inputfolder = glob('result/20220819001526/date/*.csv')
