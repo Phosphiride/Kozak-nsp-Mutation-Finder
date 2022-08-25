@@ -37,7 +37,8 @@ if __name__ == '__main__':
     inputpath = '/work/data/kozak_data/result_1-30/country'
     #inputpath = '/work/data/kozak_data/result_1-30/date'
     #inputpath = '/work/data/kozak_data/result_1-30/unagg'
-    #inputfolder = glob(f'{inputpath}/*.csv')
+
+    inputfolder = glob(f'{inputpath}/*.csv')
 
     #inputfolder = glob('result/20220819001526/country/*.csv')
     #inputfolder = glob('result/20220819001526/date/*.csv')
