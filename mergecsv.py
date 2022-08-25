@@ -33,7 +33,7 @@ def createoutput(inputfolder, outputpath, mergeframe, parameter):
 
 if __name__ == '__main__':
     #inputpath = 'result/20220819001526/country'
-    inputpath = '/work/data/kozak_data/result_31-60/output'
+    inputpath = '/work/data/kozak_data/result_61-95/output'
     #inputpath = '/work/data/kozak_data/result_1-30/country'
     #inputpath = '/work/data/kozak_data/result_1-30/date'
     #inputpath = '/work/data/kozak_data/result_1-30/unagg'
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     #inputfolder = glob('result/20220819001526/date/*.csv')
     #inputfolder = glob('result/20220819001526/unagg/*.csv')
 
-    outputpath = f'{inputpath}/output_31-60.csv'
+    outputpath = f'{inputpath}/output_61-95.csv'
     parameter = {#'aasite': [15, 17, 21],
                  'aasite': [15, 17, 21, 41, 45, 49, 50, 54, 55, 66, 70, 75, 83, 88, 89, 90, 96, 105, 108, 129, 132, 135,
                             140, 141, 142, 143, 144, 145, 163, 164, 165, 166, 167, 168, 172, 184, 186, 187, 188, 189,
