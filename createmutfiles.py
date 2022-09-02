@@ -15,14 +15,14 @@ def createmutfiles(inputfastas, outputfilenames, unaggoutputs, countryaggs, date
 
 def createfolders():
     filedate = datetime.today().strftime('%Y%m%d%H%M%S')
-    #outputpath = f'result/{filedate}/output'                   #windows
-    #countrypath = f'result/{filedate}/country'
-    #unaggpath = f'result/{filedate}/unagg'
-    #datepath = f'result/{filedate}/date'
-    outputpath = f'/work/data/kozak_data/{filedate}/output'                    #server
-    countrypath = f'/work/data/kozak_data/{filedate}/country'
-    unaggpath = f'/work/data/kozak_data/{filedate}/unagg'
-    datepath = f'/work/data/kozak_data/{filedate}/date'
+    outputpath = f'result/{filedate}/output'                   #windows
+    countrypath = f'result/{filedate}/country'
+    unaggpath = f'result/{filedate}/unagg'
+    datepath = f'result/{filedate}/date'
+    #outputpath = f'/work/data/kozak_data/{filedate}/output'                    #server
+    #countrypath = f'/work/data/kozak_data/{filedate}/country'
+    #unaggpath = f'/work/data/kozak_data/{filedate}/unagg'
+    #datepath = f'/work/data/kozak_data/{filedate}/date'
     for path in [outputpath, countrypath, unaggpath, datepath]:
         os.makedirs(path)
     return outputpath, countrypath, unaggpath, datepath
@@ -58,7 +58,7 @@ if __name__ == '__main__':
                  'max_ambig': 100000,
                  'ref_seq': ref_seq,
                  'refprotname': wildtype,
-                 # 'mafft': "C:/Program Files/mafft-win/mafft.bat",              #home pc
+                 #'mafft': "C:/Program Files/mafft-win/mafft.bat",              #home pc
                  'mafft': "/home/tools/mafft-7.505-with-extensions/core/mafft",  # server
                  'max_muts': 10000,
                  'site_offset': 10055,  # nsp5: 10055; nsp12: 13442
