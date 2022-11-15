@@ -15,14 +15,14 @@ def createmutfiles(inputfastas, outputfilenames, unaggoutputs, countryaggs, date
 
 def createfolders():
     filedate = datetime.today().strftime('%Y%m%d%H%M%S')
-    outputpath = f'result/{filedate}/output'                   #windows
-    countrypath = f'result/{filedate}/country'
-    unaggpath = f'result/{filedate}/unagg'
-    datepath = f'result/{filedate}/date'
-    #outputpath = f'/work/data/kozak_data/{filedate}/output'                    #server
-    #countrypath = f'/work/data/kozak_data/{filedate}/country'
-    #unaggpath = f'/work/data/kozak_data/{filedate}/unagg'
-    #datepath = f'/work/data/kozak_data/{filedate}/date'
+    #outputpath = f'result/{filedate}/output'                   #windows
+    #countrypath = f'result/{filedate}/country'
+    #unaggpath = f'result/{filedate}/unagg'
+    #datepath = f'result/{filedate}/date'
+    outputpath = f'/work/data/kozak_data/{filedate}/output'                    #server
+    countrypath = f'/work/data/kozak_data/{filedate}/country'
+    unaggpath = f'/work/data/kozak_data/{filedate}/unagg'
+    datepath = f'/work/data/kozak_data/{filedate}/date'
     for path in [outputpath, countrypath, unaggpath, datepath]:
         os.makedirs(path)
     return outputpath, countrypath, unaggpath, datepath
