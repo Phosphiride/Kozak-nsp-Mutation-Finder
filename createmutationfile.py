@@ -141,11 +141,12 @@ def max_muts(gen_df, refseq_str, max_muts):
     return gen_df
 
 
-def write_output(gen_df, outputfile, unagg_out, country_agg, date_agg, site_offset, refseq_str, refseq_aa_str):
+#def write_output(gen_df, outputfile, unagg_out, country_agg, date_agg, site_offset, refseq_str, refseq_aa_str):
+def write_output(gen_df, outputfile, site_offset, refseq_str, refseq_aa_str):
     records = []
 
     row = 0
-    for tup in gen_df[['all_valid_prot' , 'seq', 'country', 'date', 'total_seq']].itertuples():
+    for tup in gen_df[['all_valid_prot', 'seq', 'description', 'country', 'date', 'total_seq']].itertuples():
         row = row + 1
         avp_str = str(tup.all_valid_prot)
         for isite, (mut_nt, wt_nt) in enumerate(zip(tup.seq, refseq_str), start=1):
@@ -153,7 +154,7 @@ def write_output(gen_df, outputfile, unagg_out, country_agg, date_agg, site_offs
             aa_site = math.ceil(isite/3)
             if mut_nt != wt_nt:
                 # records.append((tup.Index , isite, isite + site_offset, wt_nt, mut_nt))
-                records.append((row, isite, isite + site_offset, wt_nt, mut_nt, aa_site, refseq_aa_str[aa_site-1], avp_str[aa_site-1], tup.country, tup.date, tup.total_seq))
+                records.append((tup.description, row, isite-1, isite + site_offset-1, wt_nt, mut_nt, aa_site, refseq_aa_str[aa_site-1], avp_str[aa_site-1], tup.country, tup.date, tup.total_seq))
 
     '''muts_df = (pd.DataFrame.from_records(records,
                                          columns=['gene site', 'genome site', 'wt nt', 'mutant nt','aa site', 'wt aa', 'mutant aa'])
@@ -168,12 +169,12 @@ def write_output(gen_df, outputfile, unagg_out, country_agg, date_agg, site_offs
     print(f'Writing outputs to {unagg_out}, {outputfile}, {country_agg}, and {date_agg}')
 
     muts_df = (pd.DataFrame.from_records(records,
-                                         columns=['row', 'gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa',
+                                         columns=['description', 'row', 'gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa',
                                                   'mutant aa', 'country', 'date', 'total seq.'])
                )
     muts_df.to_csv(unagg_out, index=False)
 
-    muts_df_agg = muts_df.groupby(['gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa', 'mutant aa', 'total seq.']) \
+    '''muts_df_agg = muts_df.groupby(['gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa', 'mutant aa', 'total seq.']) \
         .aggregate(count=pd.NamedAgg('country', 'count'), n_countries=pd.NamedAgg('country', 'nunique')).reset_index() \
         .sort_values('count', ascending=False).assign(frequency=lambda x: x['count'] / len(gen_df))
 
@@ -190,7 +191,7 @@ def write_output(gen_df, outputfile, unagg_out, country_agg, date_agg, site_offs
 
     muts_df_country.to_csv(country_agg, index=False)
 
-    muts_df_date.to_csv(date_agg, index = False)
+    muts_df_date.to_csv(date_agg, index = False)'''
 
 
 if __name__ == '__main__':

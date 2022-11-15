@@ -43,8 +43,8 @@ def dfagg(unagg_df, total_seq, outputpath):
 
 
 if __name__ == '__main__':
-    #inputpath = 'result/20220830130310/output'
-    inputpath = '/work/data/kozak-data/output_1-95'
+    inputpath = 'result/output_1-95'
+    #inputpath = '/work/data/kozak-data/output_1-95'
     inputcsv = glob(f'{inputpath}/*.csv')
     outputpath = f'{inputpath}/result_1-95.csv'
 
