@@ -44,7 +44,7 @@ def outputname(inputfastas, outputpath, countrypath, unaggpath, datepath):
 if __name__ == '__main__':
     #inputfastas = ["data/20211104_gisaid_genomes.fasta", "data/20210613_gisaid_genomes.fasta"]
     #inputfastas = glob("./data/work_1/*.fasta")
-    inputfastas = glob("/work/data/kozak_data/allnuc0521_split_1/*.fasta")
+    inputfastas = glob("/work/data/kozak_data/allnuc0521_split/*.fasta")
     outputpath, countrypath, unaggpath, datepath = createfolders()
 
     #outputfilenames = ['result/multtest_1.csv', 'result/multtest_2.csv']
