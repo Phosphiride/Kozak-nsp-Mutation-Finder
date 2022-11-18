@@ -141,8 +141,8 @@ def max_muts(gen_df, refseq_str, max_muts):
     return gen_df
 
 
-#def write_output(gen_df, outputfile, unagg_out, country_agg, date_agg, site_offset, refseq_str, refseq_aa_str):
-def write_output(gen_df, outputfile, site_offset, refseq_str, refseq_aa_str):
+def write_output(gen_df, outputfile, unagg_out, country_agg, date_agg, site_offset, refseq_str, refseq_aa_str):
+#def write_output(gen_df, outputfile, site_offset, refseq_str, refseq_aa_str):
     records = []
 
     row = 0
