@@ -65,5 +65,4 @@ if __name__ == '__main__':
                  'exclude_ambig': True,
                  'align_size': 100000
                  }
-    #createmutfiles(inputfastas, outputfilenames, unaggoutputs, countryaggs, dateaggs, parameter)
-    createmutfiles(inputfastas, outputfilenames, unaggoutputs, parameter)
+    createmutfiles(inputfastas, outputfilenames, unaggoutputs, countryaggs, dateaggs, parameter)

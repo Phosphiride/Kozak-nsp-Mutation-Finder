@@ -174,7 +174,7 @@ def write_output(gen_df, outputfile, site_offset, refseq_str, refseq_aa_str):
                )
     muts_df.to_csv(unagg_out, index=False)
 
-    '''muts_df_agg = muts_df.groupby(['gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa', 'mutant aa', 'total seq.']) \
+    muts_df_agg = muts_df.groupby(['gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa', 'mutant aa', 'total seq.']) \
         .aggregate(count=pd.NamedAgg('country', 'count'), n_countries=pd.NamedAgg('country', 'nunique')).reset_index() \
         .sort_values('count', ascending=False).assign(frequency=lambda x: x['count'] / len(gen_df))
 
@@ -191,7 +191,7 @@ def write_output(gen_df, outputfile, site_offset, refseq_str, refseq_aa_str):
 
     muts_df_country.to_csv(country_agg, index=False)
 
-    muts_df_date.to_csv(date_agg, index = False)'''
+    muts_df_date.to_csv(date_agg, index = False)
 
 
 if __name__ == '__main__':
