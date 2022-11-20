@@ -21,24 +21,25 @@ def dfagg(unagg_df, total_seq, outputpath):
         temp_df = unagg_df[(unagg_df['aa site'] == amino)]
         final_df = pd.concat([final_df, temp_df])
 
-    final_df.to_csv('result/test1.csv')
+    #final_df.to_csv('result/test1.csv')
 
     #agg_func = {'count': ['sum']}
-    grouplist = ['gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa', 'mutant aa']
+    #grouplist = ['gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa', 'mutant aa']
 
     #final_df = final_df.groupby(grouplist).aggregate(count=pd.NamedAgg('country', 'count'), n_countries=pd.NamedAgg('country', 'nunique'))\
     #    .reset_index() .sort_values('count', ascending=False).assign(frequency=lambda x: x['count'] / total_seq)
 
     #group_by_col_names = ['gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa', 'mutant aa']
-    agg_func = {
+    '''agg_func = {
         'count': ['sum']
     }
 
     df4 = final_df.groupby(grouplist).agg(agg_func)\
         .assign(total = lambda x: total_seq).assign(frequency = lambda x: x['count'] / total_seq)\
-        .sort_values('gene site', ascending=True)
+        .sort_values('gene site', ascending=True)'''
 
-    df4.to_csv(outputpath)
+    #df4.to_csv(outputpath)
+    final_df.to_csv(outputpath)
     print(f'Finished writing output to {outputpath}.')
 
 
