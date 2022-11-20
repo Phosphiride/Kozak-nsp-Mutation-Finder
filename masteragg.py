@@ -39,7 +39,7 @@ def dfagg(unagg_df, total_seq, outputpath):
         .sort_values('gene site', ascending=True)'''
 
     #df4.to_csv(outputpath)
-    final_df.to_csv(outputpath)
+    final_df.to_csv(outputpath, index=False)
     print(f'Finished writing output to {outputpath}.')
 
 
