@@ -166,7 +166,7 @@ def write_output(gen_df, outputfile, unagg_out, country_agg, date_agg, site_offs
                .assign(frequency=lambda x: x['count'] / len(gen_df))
                )'''
 
-    print(f'Writing outputs to {unagg_out}, {outputfile}, {country_agg}, and {date_agg}')
+    print(f'Writing outputs to {outputfile}, {unagg_out}, {country_agg}, and {date_agg}')
 
     muts_df = (pd.DataFrame.from_records(records,
                                          columns=['description', 'row', 'gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa',

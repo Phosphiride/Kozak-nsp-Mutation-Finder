@@ -15,14 +15,14 @@ def createmutfiles(inputfastas, outputfilenames, unaggoutputs, countryaggs, date
 
 def createfolders():
     filedate = datetime.today().strftime('%Y%m%d%H%M%S')
-    #outputpath = f'result/{filedate}/output'                   #windows
-    #countrypath = f'result/{filedate}/country'
-    #unaggpath = f'result/{filedate}/unagg'
-    #datepath = f'result/{filedate}/date'
-    outputpath = f'/work/data/kozak_data/{filedate}/output'                    #server
-    countrypath = f'/work/data/kozak_data/{filedate}/country'
-    unaggpath = f'/work/data/kozak_data/{filedate}/unagg'
-    datepath = f'/work/data/kozak_data/{filedate}/date'
+    outputpath = f'result/{filedate}/output'                   #windows
+    countrypath = f'result/{filedate}/country'
+    unaggpath = f'result/{filedate}/unagg'
+    datepath = f'result/{filedate}/date'
+    #outputpath = f'/work/data/kozak_data/{filedate}/output'                    #server
+    #countrypath = f'/work/data/kozak_data/{filedate}/country'
+    #unaggpath = f'/work/data/kozak_data/{filedate}/unagg'
+    #datepath = f'/work/data/kozak_data/{filedate}/date'
     for path in [outputpath, countrypath, unaggpath, datepath]:
         os.makedirs(path)
     return outputpath, countrypath, unaggpath, datepath
@@ -35,8 +35,8 @@ def outputname(inputfastas, outputpath, countrypath, unaggpath, datepath):
     count = 61
     for file in inputfastas:
         output_list.append(f'{outputpath}/output_{count}.csv')
-        unagg_list.append(f'{countrypath}/country_{count}.csv')
-        country_list.append(f'{unaggpath}/unagg_{count}.csv')
+        unagg_list.append(f'{unaggpath}/country_{count}.csv')
+        country_list.append(f'{countrypath}/unagg_{count}.csv')
         date_list.append(f'{datepath}/date_{count}.csv')
         count += 1
     return output_list, country_list, unagg_list, date_list
