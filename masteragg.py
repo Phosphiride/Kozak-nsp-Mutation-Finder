@@ -43,10 +43,10 @@ def dfagg(unagg_df, total_seq, outputpath):
 
 
 if __name__ == '__main__':
-    inputpath = 'result/output_1-95'
-    #inputpath = '/work/data/kozak-data/output_1-95'
+    #inputpath = 'result/output_1-95'
+    inputpath = '/work/data/kozak-data/raw_1-95_11202022'
     inputcsv = glob(f'{inputpath}/*.csv')
-    outputpath = f'{inputpath}/result_1-95.csv'
+    outputpath = f'{inputpath}/raw_1-95_11202022.csv'
 
     parameter = {  #'aasite': [15, 17, 21],
         #'aasite': [15, 17, 21, 41, 45, 49, 50, 54, 55, 66, 70, 75, 83, 88, 89, 90, 96, 105, 108, 129, 132, 135,
