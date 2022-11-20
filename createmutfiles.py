@@ -32,7 +32,7 @@ def outputname(inputfastas, outputpath, countrypath, unaggpath, datepath):
     country_list = []
     unagg_list = []
     date_list = []
-    count = 31
+    count = 61
     for file in inputfastas:
         output_list.append(f'{outputpath}/output_{count}.csv')
         unagg_list.append(f'{countrypath}/country_{count}.csv')
@@ -44,7 +44,7 @@ def outputname(inputfastas, outputpath, countrypath, unaggpath, datepath):
 if __name__ == '__main__':
     #inputfastas = ["data/20211104_gisaid_genomes.fasta", "data/20210613_gisaid_genomes.fasta"]
     #inputfastas = glob("./data/work_1/*.fasta")
-    inputfastas = glob("/work/data/kozak_data/allnuc0521_split_2/*.fasta")
+    inputfastas = glob("/work/data/kozak_data/allnuc0521_split_3/*.fasta")
     outputpath, countrypath, unaggpath, datepath = createfolders()
 
     #outputfilenames = ['result/multtest_1.csv', 'result/multtest_2.csv']
