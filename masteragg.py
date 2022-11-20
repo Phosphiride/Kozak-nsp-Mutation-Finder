@@ -54,7 +54,7 @@ if __name__ == '__main__':
         #           140, 141, 142, 143, 144, 145, 163, 164, 165, 166, 167, 168, 172, 184, 186, 187, 188, 189,
         #           190, 191, 192, 205, 212, 213, 220, 221, 234, 246, 248, 252, 253, 255, 260, 266, 274, 303],
         'aasite': [75],
-        'column_names': ['gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa',
+        'column_names': ['description', 'row', 'gene site', 'genome site', 'wt nt', 'mutant nt', 'aa site', 'wt aa',
                          'mutant aa', 'country', 'date', 'total seq.']
         #'except': 500
         }
