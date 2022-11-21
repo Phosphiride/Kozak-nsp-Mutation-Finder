@@ -47,7 +47,7 @@ if __name__ == '__main__':
     #inputpath = 'result/output_1-95'
     inputpath = '/work/data/kozak-data/raw_1-95_11202022'
     inputcsv = glob(f'{inputpath}/*.csv')
-    outputpath = f'/work/data/kozak-data/raw_1-95_11202022.csv'
+    outputpath = f'/work/data/kozak-data/raw_1-95_output.csv'
 
     parameter = {  #'aasite': [15, 17, 21],
         #'aasite': [15, 17, 21, 41, 45, 49, 50, 54, 55, 66, 70, 75, 83, 88, 89, 90, 96, 105, 108, 129, 132, 135,
